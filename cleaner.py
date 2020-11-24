@@ -1,8 +1,16 @@
 # Need to install unidecode: pip install unidecode
+# I had to download nltk stopwords as a line of python code before I could use them
 
 import csv
 import re
+import nltk
+# I had to download nltk stuff as a line of python code before I could use them:
+# nltk.download('stopwords')
+# nltk.download('punkt')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 from unidecode import unidecode
+
 
 def clean(x):
     # Convert to a lowercase string and normalize characters.
@@ -23,6 +31,7 @@ def clean(x):
 
     return result
 
+
 with open("combined_output_Nov22.csv", encoding="utf-8") as file:
     # Our input CSV file to clean.
     reader = csv.DictReader(file)
@@ -37,11 +46,27 @@ with open("combined_output_Nov22.csv", encoding="utf-8") as file:
 
     # Loop through each row.
     for row in reader:
+
+        # set stopwords per language from nltk stopwords corpus
+        if row["majority_genre"] == 'Latin':
+            stop_words = set(stopwords.words('spanish'))
+        else:
+            stop_words = set(stopwords.words('english'))
+
+        # tokenize for easy stopwords removal
+        words = row["lyrics"].split()
+        lyrics_no_stopwords = ""
+
+        # convert back to single lyrics string
+        for word in words:
+            if word.lower() not in stop_words:
+                lyrics_no_stopwords += word + " "
+
         NewRow = {
-            "title":        clean(row["song"]),
-            "artist":       clean(row["artist"]),
-            "lyrics":       clean(row["lyrics"]),
-            "genre":        clean(row["majority_genre"])
+            "title": clean(row["song"]),
+            "artist": clean(row["artist"]),
+            "lyrics": clean(lyrics_no_stopwords),
+            "genre": clean(row["majority_genre"])
         }
 
         # Send to output file.
