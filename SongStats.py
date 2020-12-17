@@ -83,8 +83,4 @@ with open('new_output.csv', 'r') as InputFile:
     finder = BigramCollocationFinder.from_words(tokens)
 
     print("\nTop ten bigrams:")
-    print(sorted(finder.nbest(bigram_measures.raw_freq, 10)))
-
-    print()
-
     print(sorted(finder.ngram_fd.items(), key=lambda t: (-t[1], t[0]))[:10])
